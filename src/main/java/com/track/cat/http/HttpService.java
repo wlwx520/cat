@@ -42,15 +42,6 @@ public class HttpService extends AbstractVerticle {
 	public void start() {
 		Router router = Router.router(gVertx);
 		
-		router.post("/ttt").handler(new Handler<RoutingContext>() {
-			
-			@Override
-			public void handle(RoutingContext event) {
-				System.out.println(event.getBodyAsString());
-				event.response().end("ddd");
-			}
-		});
-		
 		ConcurrentMap<String, Invoker> workers = HandlerManager.getWorkers();
 		workers.forEach((mapping, invoker) -> {
 			router.post(mapping).handler(context -> {
