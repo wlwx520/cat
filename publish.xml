@@ -16,12 +16,5 @@
 				<include>*build.jar</include>
 			</includes>
 		</fileSet>
-		<fileSet>
-			<fileMode>0755</fileMode>
-			<directory>${project.basedir}</directory>
-			<outputDirectory>/</outputDirectory>
-			<includes>
-			</includes>
-		</fileSet>
 	</fileSets>
 </assembly>

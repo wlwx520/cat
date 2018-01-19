@@ -1,30 +1,29 @@
 package com.track.cat.http;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.log4j.Logger;
-
 import com.alibaba.fastjson.JSONObject;
+import com.track.cat.core.Definiens;
 import com.track.cat.handler.HandlerManager;
+import com.track.cat.handler.Invocation;
+import com.track.cat.handler.Result;
 import com.track.cat.handler.interfaces.Invoker;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 public class HttpService extends AbstractVerticle {
-	private static Logger LOGGER = Logger.getLogger(HttpService.class);
-
 	private static Vertx gVertx = null;
-	private HandlerManager handlerManager = HandlerManager.instance();
-
-	public static void main(String[] args) {
-		HttpService.init();
-	}
 
 	public static void init() {
 		System.setProperty("vertx.disableFileCaching", "true");
@@ -42,25 +41,47 @@ public class HttpService extends AbstractVerticle {
 	@Override
 	public void start() {
 		Router router = Router.router(gVertx);
-
-		// TODO
-		ConcurrentMap<String, Invoker> workers = handlerManager.getWorkers();
+		
+		router.post("/ttt").handler(new Handler<RoutingContext>() {
+			
+			@Override
+			public void handle(RoutingContext event) {
+				System.out.println(event.getBodyAsString());
+				event.response().end("ddd");
+			}
+		});
+		
+		ConcurrentMap<String, Invoker> workers = HandlerManager.getWorkers();
 		workers.forEach((mapping, invoker) -> {
 			router.post(mapping).handler(context -> {
-				String body = context.getBodyAsString("utf-8");
 				try {
-					JSONObject invocation = JSONObject.parseObject(body);
-					// TODO
+					JSONObject jsonReq = new JSONObject();
+					MultiMap httpParam = context.request().params();
+					List<Map.Entry<String, String>> list = httpParam.entries();
+					for (Map.Entry<String, String> e : list) {
+						String key = e.getKey();
+						String value = e.getValue();
+						if (value == null || value.length() == 0) {
+							continue;
+						}
+						jsonReq.put(key, value);
+					}
+
+					Invocation invocation = new Invocation();
+					invocation.setAttachment(Invocation.MAPPING, mapping);
+					invocation.setAttachment(Invocation.JSON_REQEST, jsonReq);
+					Result result = HandlerManager.handler(invocation);
+					context.response().end(result.getAttachment(Result.JSON_REPONSE).toString());
 				} catch (Exception e) {
-					context.response().end("cuo l ");
+					context.response().end(ResultBuilder.build(0x1001).toString());
 				}
 			});
+			
 		});
-
 		HttpServerOptions options = new HttpServerOptions();
 		options.setReuseAddress(true);
 		HttpServer server = gVertx.createHttpServer(options);
-		server.requestHandler(router::accept).listen(8080);
+		server.requestHandler(router::accept).listen(Integer.valueOf(Definiens.PORT));
 
 	}
 

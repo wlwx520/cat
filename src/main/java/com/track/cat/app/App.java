@@ -1,10 +1,13 @@
 package com.track.cat.app;
 
-import org.apache.log4j.Logger;
+import com.track.cat.handler.FilterManager;
+import com.track.cat.handler.HandlerManager;
+import com.track.cat.http.HttpService;
 
 public class App {
-	private static Logger LOGGER = Logger.getLogger(App.class);
-
 	public static void main(String[] args) {
+		FilterManager.init();
+		HandlerManager.init();
+		HttpService.init();
 	}
 }

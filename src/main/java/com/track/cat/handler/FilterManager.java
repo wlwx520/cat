@@ -14,19 +14,17 @@ import com.track.cat.handler.interfaces.Invoker;
 import com.track.cat.util.FileUtil;
 
 public class FilterManager {
-	private static FilterManager instance = new FilterManager();
 	private static Map<Class<?>, Object> context = new ConcurrentHashMap<>();
-	private List<Filter> filters = new ArrayList<>();
+	private static List<Filter> filters = new ArrayList<>();
 
-	public static FilterManager instance() {
-		return instance;
+	private FilterManager() {
 	}
 
-	public void init() {
+	public static void init() {
 		_scan(new File(FileUtil.getAppRoot() + File.separator + Definiens.SERVICE_PACKAGE));
 	}
 
-	private void _scan(File root) {
+	private static void _scan(File root) {
 		FileUtil.subFile(root).forEach(file -> {
 			addFilter(file);
 		});
@@ -36,7 +34,7 @@ public class FilterManager {
 		});
 	}
 
-	private void addFilter(File file) {
+	private static void addFilter(File file) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			Class<?> clz = classLoader.loadClass(Definiens.SERVICE_PACKAGE + file.getName().replace(".java", ""));
@@ -59,7 +57,7 @@ public class FilterManager {
 		}
 	}
 
-	public Invoker link(final Invoker invoker) {
+	public static Invoker link(final Invoker invoker) {
 		Invoker last = invoker;
 		if (!filters.isEmpty()) {
 			for (int i = filters.size() - 1; i >= 0; i--) {

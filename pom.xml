@@ -11,6 +11,12 @@
 		<mainClass>com.track.cat.app.App</mainClass>
 	</properties>
 	<dependencies>
+		<!-- XML decode -->
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
 		<!-- HTTP Service Channel -->
 		<dependency>
 			<groupId>io.vertx</groupId>

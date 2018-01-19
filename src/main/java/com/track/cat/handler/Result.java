@@ -1,23 +1,18 @@
 package com.track.cat.handler;
 
-import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Result {
-	private JSONObject result;
+	public static final String JSON_REPONSE = "constants_response";
+	private Map<String, Object> attachments = new HashMap<String, Object>();
 
-	public Result() {
-		this.result = new JSONObject();
+	public Object getAttachment(String key) {
+		return attachments.get(key);
 	}
 
 	public void setAttachment(String key, Object value) {
-		result.put(key, value);
+		attachments.put(key, value);
 	}
 
-	public Object getAttachment(String key) {
-		return result.get(key);
-	}
-
-	public JSONObject getResult() {
-		return result;
-	}
 }
