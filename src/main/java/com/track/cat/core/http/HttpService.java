@@ -28,6 +28,7 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.StaticHandler;
 
 public class HttpService extends AbstractVerticle {
 	private static Vertx gVertx = null;
@@ -65,8 +66,10 @@ public class HttpService extends AbstractVerticle {
 					file(router, mapping);
 				}
 			}
-
 		});
+		
+		router.route().handler(StaticHandler.create().setWebRoot("web").setCachingEnabled(false));
+		
 		HttpServerOptions options = new HttpServerOptions();
 		options.setReuseAddress(true);
 		HttpServer server = gVertx.createHttpServer(options);
