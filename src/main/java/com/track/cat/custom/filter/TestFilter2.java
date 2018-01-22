@@ -6,7 +6,7 @@ import com.track.cat.core.handler.annotation.Filter;
 import com.track.cat.core.handler.interfaces.IFilter;
 import com.track.cat.core.handler.interfaces.IInvoker;
 
-@Filter(index = 0)
+@Filter(index = 2)
 public class TestFilter2 implements IFilter {
 
 	@Override

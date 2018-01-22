@@ -9,15 +9,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
+
 import com.track.cat.core.Definiens;
 import com.track.cat.core.Invocation;
 import com.track.cat.core.Result;
 import com.track.cat.core.handler.annotation.Filter;
+import com.track.cat.core.handler.exception.CatSystemException;
 import com.track.cat.core.handler.interfaces.IFilter;
 import com.track.cat.core.handler.interfaces.IInvoker;
 import com.track.cat.util.FileUtil;
 
 public class FilterManager {
+	private static final Logger LOGGER = Logger.getLogger(FilterManager.class);
 	private static Map<Class<?>, Object> context = new ConcurrentHashMap<>();
 	private static List<IFilter> filters;
 
@@ -26,14 +30,22 @@ public class FilterManager {
 
 	public static void init() {
 		List<BaseFilter> inners = new ArrayList<>();
-		_scan(new File(FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator
-				+ "java" + File.separator + Definiens.FILTER_PACKAGE.replaceAll("\\.", "/")), "", inners);
+		String path = FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator + "java"
+				+ File.separator + Definiens.FILTER_PACKAGE.replaceAll("\\.", "/");
+
+		LOGGER.info("scan the package to find filter in " + path);
+
+		_scan(new File(path), "", inners);
 
 		filters = inners.stream().sorted((a, b) -> {
 			return a.getIndex() - b.getIndex();
 		}).map(item -> {
 			return item.getFilter();
 		}).collect(Collectors.toList());
+
+		filters.forEach(filter -> {
+			LOGGER.info("filter of " + filter.getClass().getName() + " is loaded");
+		});
 	}
 
 	private static void _scan(File root, String parent, List<BaseFilter> inners) {
@@ -72,9 +84,10 @@ public class FilterManager {
 			int index = filter.index();
 
 			inners.add(new BaseFilter(index, newInstance));
+
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			throw new CatSystemException(e);
 		}
 	}
 

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.log4j.Logger;
+
 import com.track.cat.core.Definiens;
 import com.track.cat.core.Invocation;
 import com.track.cat.core.Result;
@@ -19,12 +21,24 @@ import com.track.cat.core.handler.interfaces.IService;
 import com.track.cat.util.FileUtil;
 
 public class HandlerManager {
+	private static final Logger LOGGER = Logger.getLogger(HandlerManager.class);
 	private static Map<Class<?>, Object> context = new ConcurrentHashMap<>();
 	private static ConcurrentMap<String, BaseHandler> workers = new ConcurrentHashMap<>();
 
 	public static void init() {
-		_scan(new File(FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator
-				+ "java" + File.separator + Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/")), "");
+		String path = FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator + "java"
+				+ File.separator + Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/");
+		_scan(new File(path), "");
+		LOGGER.info("scan the package to find handler in " + path);
+
+		workers.forEach((k, v) -> {
+			String methods = "";
+			for (HttpMethod method : v.getMethods()) {
+				methods += " " + method.name();
+			}
+
+			LOGGER.info("handler of " + k + " is loaded , method = {" + methods + " }");
+		});
 	}
 
 	private static void _scan(File root, String parent) {

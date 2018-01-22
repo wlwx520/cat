@@ -26,16 +26,9 @@ public class TestService implements IService {
 	public Result test2(Invocation invocation) {
 		Set<FileUpload> fileUploads = invocation.getAttachment(Invocation.UPLOAD_FILES);
 		fileUploads.forEach(fileUpload->{
-			String contentType = fileUpload.contentType();
-			String fileName = fileUpload.fileName();
-			long size = fileUpload.size();
-			String uploadedFileName = fileUpload.uploadedFileName();
-			System.out.println(contentType);
-			System.out.println(fileName);
-			System.out.println(size);
-			System.out.println(uploadedFileName);
+			
 		});
 
-		return null;
+		return ResultBuilder.buildResult(0);
 	}
 }

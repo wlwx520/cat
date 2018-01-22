@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Filter {
-	int index() default -1;
+	int index() default Integer.MAX_VALUE;
 }
