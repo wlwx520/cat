@@ -13,7 +13,7 @@ public class Definiens {
 
 	public static String get(String key) {
 		Element rootEle = XmlUtil
-				.get(FileUtil.getAppRoot() + File.separator + "config" + File.separator + "applicationContext.xml");
+				.get(FileUtil.getAppRoot() + File.separator + "config" + File.separator + "context.xml");
 		return rootEle.elementText(key);
 	}
 }
