@@ -28,7 +28,6 @@ public class TestService implements IService {
 		fileUploads.forEach(fileUpload->{
 			
 		});
-
 		return ResultBuilder.buildResult(0);
 	}
 }

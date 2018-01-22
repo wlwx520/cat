@@ -13,7 +13,7 @@ import com.track.cat.core.handler.interfaces.IInvoker;
 
 import io.vertx.ext.web.FileUpload;
 
-@Filter(index=0)
+@Filter(index = 0)
 public class LogDebugFilter implements IFilter {
 	private static final Logger LOGGER = Logger.getLogger(LogDebugFilter.class);
 
@@ -24,18 +24,21 @@ public class LogDebugFilter implements IFilter {
 		Set<FileUpload> fileUploads = invocation.getAttachment(Invocation.UPLOAD_FILES);
 		StringBuilder debug = new StringBuilder();
 		debug.append("\n");
+		debug.append(">>>>>> ");
 		debug.append("mapping = ");
 		debug.append(mapping);
 		debug.append("\n");
+		debug.append(">>>>>> ");
 		debug.append("request = ");
 		debug.append(request);
 		debug.append("\n");
+		debug.append(">>>>>> ");
 		if (fileUploads != null && !fileUploads.isEmpty()) {
 			debug.append("fileUploads size = ");
 			debug.append(fileUploads.size());
 			fileUploads.forEach(fileUpload -> {
 				debug.append("\n");
-				debug.append("\t");
+				debug.append(">>>>>>>>>>>> ");
 				debug.append("contentType = ");
 				debug.append(fileUpload.contentType());
 				debug.append(",");

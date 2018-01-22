@@ -22,7 +22,7 @@
 			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>config/**</include>
-				<include>upload/**</include>
+				<include>upload</include>
 				<include>web/**</include>
 			</includes>
 		</fileSet>

@@ -1,8 +1,6 @@
 package com.track.cat.core.http;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +34,7 @@ public class HttpService extends AbstractVerticle {
 	private static final Logger LOGGER = Logger.getLogger(HttpService.class);
 	private static Vertx gVertx = null;
 	private static String webPath = "web";
-	private static String uploadPath = FileUtil.getAppRoot() + File.separator + "upload";
+	private static String uploadPath = "upload";
 
 	public static void init() {
 		VertxOptions vp = new VertxOptions();
@@ -49,8 +47,8 @@ public class HttpService extends AbstractVerticle {
 		gVertx.deployVerticle(HttpService.class.getName(), p);
 
 		LOGGER.info("http channel size = " + Definiens.HTTP_CHANNEL_SIZE);
-		LOGGER.info("system upload root = "+uploadPath);
-		LOGGER.info("system web root = "+FileUtil.getAppRoot() + File.separator +webPath);
+		LOGGER.info("system upload root = " + uploadPath);
+		LOGGER.info("system web root = " + FileUtil.getAppRoot() + File.separator + webPath);
 	}
 
 	@Override
@@ -58,7 +56,6 @@ public class HttpService extends AbstractVerticle {
 		Router router = Router.router(gVertx);
 
 		router.route().handler(BodyHandler.create().setUploadsDirectory(uploadPath));
-		
 
 		ConcurrentMap<String, BaseHandler> workers = HandlerManager.getWorkers();
 		workers.forEach((mapping, handler) -> {
@@ -78,7 +75,6 @@ public class HttpService extends AbstractVerticle {
 		});
 
 		router.route().handler(StaticHandler.create().setWebRoot(webPath).setCachingEnabled(false));
-	
 
 		HttpServerOptions options = new HttpServerOptions();
 		options.setReuseAddress(true);
@@ -151,16 +147,8 @@ public class HttpService extends AbstractVerticle {
 			invocation.setAttachment(Invocation.REQUEST, param);
 			invocation.setAttachment(Invocation.UPLOAD_FILES, fileUploads);
 			Result result = HandlerManager.handler(invocation);
-			
-			context.response().end(result.getAttachment(Result.RESPONSE).toString());
 
-			fileUploads.forEach(file -> {
-				try {
-					Files.delete(Paths.get(file.uploadedFileName()));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
+			context.response().end(result.getAttachment(Result.RESPONSE).toString());
 		});
 	}
 
