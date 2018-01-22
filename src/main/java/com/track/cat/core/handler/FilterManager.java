@@ -27,7 +27,7 @@ public class FilterManager {
 	public static void init() {
 		List<BaseFilter> inners = new ArrayList<>();
 		_scan(new File(FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator
-				+ "java" + File.separator + Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/")), "", inners);
+				+ "java" + File.separator + Definiens.FILTER_PACKAGE.replaceAll("\\.", "/")), "", inners);
 
 		filters = inners.stream().sorted((a, b) -> {
 			return a.getIndex() - b.getIndex();
@@ -50,7 +50,7 @@ public class FilterManager {
 
 	private static void addFilter(String name, List<BaseFilter> inners) {
 		try {
-			Class<?> clz = Class.forName(Definiens.SERVICE_PACKAGE + name.replace(".java", ""));
+			Class<?> clz = Class.forName(Definiens.FILTER_PACKAGE + name.replace(".java", ""));
 			if (!IFilter.class.isAssignableFrom(clz)) {
 				return;
 			}

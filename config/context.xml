@@ -1,4 +1,5 @@
 <config>
 	<port>8080</port>
-	<scan-package>com.track.cat.custom</scan-package>
+	<service-package>com.track.cat.custom.serivce</service-package>
+	<filter-package>com.track.cat.custom.filter</filter-package>
 </config>
