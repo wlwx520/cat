@@ -1,10 +1,10 @@
-package com.track.cat.handler;
+package com.track.cat.core;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Result {
-	public static final String JSON_REPONSE = "constants_response";
+	public static final String RESPONSE = "constants_response";
 	private Map<String, Object> attachments = new HashMap<String, Object>();
 
 	public Object getAttachment(String key) {

@@ -1,10 +1,10 @@
-package com.track.cat.http;
+package com.track.cat.core.http;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
-import com.track.cat.handler.Result;
+import com.track.cat.core.Result;
 
 public class ResultBuilder {
 	private ResultBuilder() {
@@ -28,13 +28,13 @@ public class ResultBuilder {
 
 	public static Result buildResult(int code) {
 		Result result = new Result();
-		result.setAttachment(Result.JSON_REPONSE, build(code));
+		result.setAttachment(Result.RESPONSE, build(code));
 		return result;
 	}
 
 	public static Result buildResult(int code, JSONObject jsonObject) {
 		Result result = new Result();
-		result.setAttachment(Result.JSON_REPONSE, build(code, jsonObject));
+		result.setAttachment(Result.RESPONSE, build(code, jsonObject));
 		return result;
 	}
 
@@ -43,7 +43,6 @@ public class ResultBuilder {
 
 		static {
 			error.put(0, "success");
-			error.put(0x1001, "Request Body only allow Json");
 		}
 
 		public static String getErrorInfo(int code) {

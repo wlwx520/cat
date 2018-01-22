@@ -1,4 +1,4 @@
-package com.track.cat.handler;
+package com.track.cat.core.handler;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -9,35 +9,43 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.track.cat.core.Definiens;
-import com.track.cat.handler.annotation.Handler;
-import com.track.cat.handler.annotation.Service;
-import com.track.cat.handler.exception.MappingNotFoundExcption;
-import com.track.cat.handler.interfaces.Invoker;
+import com.track.cat.core.Invocation;
+import com.track.cat.core.Result;
+import com.track.cat.core.handler.annotation.Handler;
+import com.track.cat.core.handler.annotation.Service;
+import com.track.cat.core.handler.exception.CatSystemException;
+import com.track.cat.core.handler.interfaces.IInvoker;
+import com.track.cat.core.handler.interfaces.IService;
 import com.track.cat.util.FileUtil;
 
 public class HandlerManager {
 	private static Map<Class<?>, Object> context = new ConcurrentHashMap<>();
-	private static ConcurrentMap<String, Invoker> workers = new ConcurrentHashMap<>();
+	private static ConcurrentMap<String, IInvoker> workers = new ConcurrentHashMap<>();
 
 	public static void init() {
-		_scan(new File(FileUtil.getAppRoot() + File.separator + "src/main/java/"
-				+ Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/")));
+		_scan(new File(FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator
+				+ "java" + File.separator + Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/")), "");
 	}
 
-	private static void _scan(File root) {
+	private static void _scan(File root, String parent) {
 		FileUtil.subFile(root).forEach(file -> {
-			addWork(file);
+			String name = file.getName();
+			addWork(parent + "." + name);
 		});
 
 		FileUtil.subDir(root).forEach(file -> {
-			_scan(file);
+			String name = file.getName();
+			_scan(file, parent + "." + name);
 		});
 	}
 
-	private static void addWork(File file) {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	private static void addWork(String name) {
 		try {
-			Class<?> clz = classLoader.loadClass(Definiens.SERVICE_PACKAGE + "."+file.getName().replace(".java", ""));
+			Class<?> clz = Class.forName(Definiens.SERVICE_PACKAGE + name.replace(".java", ""));
+			if (!IService.class.isAssignableFrom(clz)) {
+				return;
+			}
+
 			Service service = clz.getAnnotation(Service.class);
 			if (service == null) {
 				return;
@@ -60,25 +68,31 @@ public class HandlerManager {
 				Handler handler = method.getAnnotation(Handler.class);
 				if (handler != null) {
 					String value = handler.value();
-					workers.put(parentValue + value, FilterManager.link(new HandlerInvoker(method, newInstance)));
+					workers.put(parentValue + value, FilterManager.link(invocation -> {
+						try {
+							return (Result) method.invoke(newInstance, invocation);
+						} catch (Exception e) {
+							throw new CatSystemException(e);
+						}
+					}));
 				}
 			}
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			throw new CatSystemException(e);
 		}
 	}
 
-	public static Result handler(Invocation invocation) throws MappingNotFoundExcption {
+	public static Result handler(Invocation invocation) {
 		String mapping = (String) invocation.getAttachment(Invocation.MAPPING);
-		Invoker invoker = workers.get(mapping);
+		IInvoker invoker = workers.get(mapping);
 		if (invoker == null) {
-			throw new MappingNotFoundExcption(mapping);
+			throw new CatSystemException(mapping + " is not found");
 		}
 		return invoker.invoke(invocation);
 	}
 
-	public static ConcurrentMap<String, Invoker> getWorkers() {
+	public static ConcurrentMap<String, IInvoker> getWorkers() {
 		return workers;
 	}
 

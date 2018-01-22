@@ -1,7 +1,10 @@
 package com.track.cat.core;
 
+import java.io.File;
+
 import org.dom4j.Element;
 
+import com.track.cat.util.FileUtil;
 import com.track.cat.util.XmlUtil;
 
 public class Definiens {
@@ -10,7 +13,7 @@ public class Definiens {
 
 	public static String get(String key) {
 		Element rootEle = XmlUtil
-				.get(ClassLoader.getSystemResource("applicationContext.xml").getPath().replaceFirst("/", ""));
+				.get(FileUtil.getAppRoot() + File.separator + "config" + File.separator + "applicationContext.xml");
 		return rootEle.elementText(key);
 	}
 }
