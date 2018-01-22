@@ -1,4 +1,4 @@
-<beans>
+<config>
 	<port>8080</port>
 	<scan-package>com.track.cat.custom</scan-package>
-</beans>
+</config>
