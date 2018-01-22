@@ -20,7 +20,7 @@ import com.track.cat.util.FileUtil;
 
 public class HandlerManager {
 	private static Map<Class<?>, Object> context = new ConcurrentHashMap<>();
-	private static ConcurrentMap<String, IInvoker> workers = new ConcurrentHashMap<>();
+	private static ConcurrentMap<String, BaseHandler> workers = new ConcurrentHashMap<>();
 
 	public static void init() {
 		_scan(new File(FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator
@@ -68,13 +68,15 @@ public class HandlerManager {
 				Handler handler = method.getAnnotation(Handler.class);
 				if (handler != null) {
 					String value = handler.value();
-					workers.put(parentValue + value, FilterManager.link(invocation -> {
+					IInvoker invoker = FilterManager.link(invocation -> {
 						try {
 							return (Result) method.invoke(newInstance, invocation);
 						} catch (Exception e) {
 							throw new CatSystemException(e);
 						}
-					}));
+					});
+
+					workers.put(parentValue + value, new BaseHandler(handler.method(), invoker));
 				}
 			}
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
@@ -85,14 +87,14 @@ public class HandlerManager {
 
 	public static Result handler(Invocation invocation) {
 		String mapping = (String) invocation.getAttachment(Invocation.MAPPING);
-		IInvoker invoker = workers.get(mapping);
+		IInvoker invoker = workers.get(mapping).getInvoker();
 		if (invoker == null) {
 			throw new CatSystemException(mapping + " is not found");
 		}
 		return invoker.invoke(invocation);
 	}
 
-	public static ConcurrentMap<String, IInvoker> getWorkers() {
+	public static ConcurrentMap<String, BaseHandler> getWorkers() {
 		return workers;
 	}
 

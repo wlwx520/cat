@@ -25,18 +25,18 @@ public class FilterManager {
 	}
 
 	public static void init() {
-		List<Inner> inners = new ArrayList<>();
+		List<BaseFilter> inners = new ArrayList<>();
 		_scan(new File(FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator
 				+ "java" + File.separator + Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/")), "", inners);
 
 		filters = inners.stream().sorted((a, b) -> {
-			return a.index - b.index;
+			return a.getIndex() - b.getIndex();
 		}).map(item -> {
-			return item.filter;
+			return item.getFilter();
 		}).collect(Collectors.toList());
 	}
 
-	private static void _scan(File root, String parent, List<Inner> inners) {
+	private static void _scan(File root, String parent, List<BaseFilter> inners) {
 		FileUtil.subFile(root).forEach(file -> {
 			String name = file.getName();
 			addFilter(parent + "." + name, inners);
@@ -48,7 +48,7 @@ public class FilterManager {
 		});
 	}
 
-	private static void addFilter(String name, List<Inner> inners) {
+	private static void addFilter(String name, List<BaseFilter> inners) {
 		try {
 			Class<?> clz = Class.forName(Definiens.SERVICE_PACKAGE + name.replace(".java", ""));
 			if (!IFilter.class.isAssignableFrom(clz)) {
@@ -71,7 +71,7 @@ public class FilterManager {
 
 			int index = filter.index();
 
-			inners.add(new Inner(index, newInstance));
+			inners.add(new BaseFilter(index, newInstance));
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
@@ -92,16 +92,6 @@ public class FilterManager {
 			}
 		}
 		return last;
-	}
-
-	private static class Inner {
-		private int index;
-		private IFilter filter;
-
-		private Inner(int index, IFilter filter) {
-			this.index = index;
-			this.filter = filter;
-		}
 	}
 
 }

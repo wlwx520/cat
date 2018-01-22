@@ -1,16 +1,21 @@
 package com.track.cat.core.http;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import com.track.cat.core.Definiens;
 import com.track.cat.core.Invocation;
 import com.track.cat.core.Result;
+import com.track.cat.core.handler.BaseHandler;
 import com.track.cat.core.handler.HandlerManager;
-import com.track.cat.core.handler.interfaces.IInvoker;
+import com.track.cat.core.handler.HttpMethod;
 import com.track.cat.util.FileUtil;
 
 import io.vertx.core.AbstractVerticle;
@@ -20,6 +25,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
@@ -44,29 +50,21 @@ public class HttpService extends AbstractVerticle {
 		String uploadPath = FileUtil.getAppRoot() + File.separator + "upload";
 		router.route().handler(BodyHandler.create().setUploadsDirectory(uploadPath));
 
-		ConcurrentMap<String, IInvoker> workers = HandlerManager.getWorkers();
-		workers.forEach((mapping, invoker) -> {
-			router.post(mapping).handler(context -> {
-				System.out.println(context.request().getHeader("Content-Type"));
-				System.out.println(mapping);
-				Map<String, String> param = new HashMap<>();
-				MultiMap httpParam = context.request().params();
-				List<Map.Entry<String, String>> list = httpParam.entries();
-				for (Map.Entry<String, String> e : list) {
-					String key = e.getKey();
-					String value = e.getValue();
-					if (value == null || value.length() == 0) {
-						continue;
-					}
-					param.put(key, value);
+		ConcurrentMap<String, BaseHandler> workers = HandlerManager.getWorkers();
+		workers.forEach((mapping, handler) -> {
+			HttpMethod[] methods = handler.getMethods();
+			if (methods != null && methods.length > 0) {
+				List<HttpMethod> asList = Arrays.asList(methods);
+				if (asList.contains(HttpMethod.GET)) {
+					get(router, mapping);
 				}
-
-				Invocation invocation = new Invocation();
-				invocation.setAttachment(Invocation.MAPPING, mapping);
-				invocation.setAttachment(Invocation.REQUEST, param);
-				Result result = HandlerManager.handler(invocation);
-				context.response().end(result.getAttachment(Result.RESPONSE).toString());
-			});
+				if (asList.contains(HttpMethod.POST)) {
+					post(router, mapping);
+				}
+				if (asList.contains(HttpMethod.FILE)) {
+					file(router, mapping);
+				}
+			}
 
 		});
 		HttpServerOptions options = new HttpServerOptions();
@@ -74,6 +72,83 @@ public class HttpService extends AbstractVerticle {
 		HttpServer server = gVertx.createHttpServer(options);
 		server.requestHandler(router::accept).listen(Integer.valueOf(Definiens.PORT));
 
+	}
+
+	private void post(Router router, String mapping) {
+		router.post(mapping).handler(context -> {
+			Map<String, String> param = new HashMap<>();
+			MultiMap httpParam = context.request().params();
+			List<Map.Entry<String, String>> list = httpParam.entries();
+			for (Map.Entry<String, String> e : list) {
+				String key = e.getKey();
+				String value = e.getValue();
+				if (value == null || value.length() == 0) {
+					continue;
+				}
+				param.put(key, value);
+			}
+
+			Invocation invocation = new Invocation();
+			invocation.setAttachment(Invocation.MAPPING, mapping);
+			invocation.setAttachment(Invocation.REQUEST, param);
+			Result result = HandlerManager.handler(invocation);
+			context.response().end(result.getAttachment(Result.RESPONSE).toString());
+		});
+	}
+
+	private void get(Router router, String mapping) {
+		router.get(mapping).handler(context -> {
+			Map<String, String> param = new HashMap<>();
+			MultiMap httpParam = context.request().params();
+			List<Map.Entry<String, String>> list = httpParam.entries();
+			for (Map.Entry<String, String> e : list) {
+				String key = e.getKey();
+				String value = e.getValue();
+				if (value == null || value.length() == 0) {
+					continue;
+				}
+				param.put(key, value);
+			}
+
+			Invocation invocation = new Invocation();
+			invocation.setAttachment(Invocation.MAPPING, mapping);
+			invocation.setAttachment(Invocation.REQUEST, param);
+			Result result = HandlerManager.handler(invocation);
+			context.response().end(result.getAttachment(Result.RESPONSE).toString());
+		});
+	}
+
+	private void file(Router router, String mapping) {
+		router.get(mapping).handler(context -> {
+			Map<String, String> param = new HashMap<>();
+			MultiMap httpParam = context.request().params();
+			List<Map.Entry<String, String>> list = httpParam.entries();
+			for (Map.Entry<String, String> e : list) {
+				String key = e.getKey();
+				String value = e.getValue();
+				if (value == null || value.length() == 0) {
+					continue;
+				}
+				param.put(key, value);
+			}
+
+			Set<FileUpload> fileUploads = context.fileUploads();
+
+			Invocation invocation = new Invocation();
+			invocation.setAttachment(Invocation.MAPPING, mapping);
+			invocation.setAttachment(Invocation.REQUEST, param);
+			invocation.setAttachment(Invocation.UPLOAD_FILES, fileUploads);
+			Result result = HandlerManager.handler(invocation);
+			context.response().end(result.getAttachment(Result.RESPONSE).toString());
+
+			fileUploads.forEach(file -> {
+				try {
+					Files.delete(Paths.get(file.uploadedFileName()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+		});
 	}
 
 }

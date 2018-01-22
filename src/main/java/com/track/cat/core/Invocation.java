@@ -7,6 +7,7 @@ public class Invocation {
 	private Map<String, Object> attachments = new HashMap<String, Object>();
 	public static final String MAPPING = "constants_mapping";
 	public static final String REQUEST = "constants_request";
+	public static final String UPLOAD_FILES = "constants_upload_files";
 
 	@SuppressWarnings("unchecked")
 	public <T> T getAttachment(String key) {
