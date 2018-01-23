@@ -1,4 +1,4 @@
-package com.track.cat.core.handler.annotation;
+package com.track.cat.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Filter {
-	int index() default Integer.MAX_VALUE;
+public @interface Service {
+	public String value();
 }

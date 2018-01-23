@@ -1,6 +1,6 @@
 package com.track.cat.core.handler;
 
-import com.track.cat.core.handler.interfaces.IFilter;
+import com.track.cat.core.interfaces.IFilter;
 
 public class BaseFilter {
 	private int index;

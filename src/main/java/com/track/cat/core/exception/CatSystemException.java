@@ -1,4 +1,4 @@
-package com.track.cat.core.handler.exception;
+package com.track.cat.core.exception;
 
 public class CatSystemException extends RuntimeException {
 

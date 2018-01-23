@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import com.track.cat.core.handler.exception.CatSystemException;
+import com.track.cat.core.exception.CatSystemException;
 
 public class LoggerManager {
 	public static void init(String path) {

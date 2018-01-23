@@ -1,4 +1,4 @@
-package com.track.cat.core.handler.interfaces;
+package com.track.cat.core.interfaces;
 
 import com.track.cat.core.Invocation;
 import com.track.cat.core.Result;

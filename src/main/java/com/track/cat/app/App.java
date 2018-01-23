@@ -12,6 +12,7 @@ public class App {
 
 	public static void main(String[] args) {
 		LoggerManager.init("config/log4j.properties");
+		
 		LOGGER.info("the system is initializing");
 		FilterManager.init();
 		HandlerManager.init();

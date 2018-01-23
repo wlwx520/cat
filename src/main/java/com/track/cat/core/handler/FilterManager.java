@@ -1,28 +1,24 @@
 package com.track.cat.core.handler;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
+import com.track.cat.core.ApplicationContext;
 import com.track.cat.core.Definiens;
 import com.track.cat.core.Invocation;
 import com.track.cat.core.Result;
-import com.track.cat.core.handler.annotation.Filter;
-import com.track.cat.core.handler.exception.CatSystemException;
-import com.track.cat.core.handler.interfaces.IFilter;
-import com.track.cat.core.handler.interfaces.IInvoker;
+import com.track.cat.core.annotation.Filter;
+import com.track.cat.core.exception.CatSystemException;
+import com.track.cat.core.interfaces.IFilter;
+import com.track.cat.core.interfaces.IInvoker;
 import com.track.cat.util.FileUtil;
 
 public class FilterManager {
 	private static final Logger LOGGER = Logger.getLogger(FilterManager.class);
-	private static Map<Class<?>, Object> context = new ConcurrentHashMap<>();
 	private static List<IFilter> filters;
 
 	private FilterManager() {
@@ -72,21 +68,14 @@ public class FilterManager {
 				return;
 			}
 
-			if (!context.containsKey(clz)) {
-				Constructor<?> constructor = clz.getConstructor();
-				constructor.setAccessible(true);
-				Object newInstance = constructor.newInstance();
-				context.put(clz, newInstance);
-			}
-
-			IFilter newInstance = (IFilter) context.get(clz);
+			@SuppressWarnings("unchecked")
+			IFilter newInstance = ApplicationContext.instance().getBean((Class<IFilter>) clz);
 
 			int index = filter.index();
 
 			inners.add(new BaseFilter(index, newInstance));
 
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
-				| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (ClassNotFoundException | SecurityException | IllegalArgumentException e) {
 			throw new CatSystemException(e);
 		}
 	}

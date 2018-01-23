@@ -1,6 +1,6 @@
 package com.track.cat.core.handler;
 
-import com.track.cat.core.handler.interfaces.IInvoker;
+import com.track.cat.core.interfaces.IInvoker;
 
 public class BaseHandler {
 	private HttpMethod[] methods;

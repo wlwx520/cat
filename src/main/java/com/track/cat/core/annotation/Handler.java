@@ -1,4 +1,4 @@
-package com.track.cat.core.handler.annotation;
+package com.track.cat.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
