@@ -1,6 +1,21 @@
-<config>
+<root>
 	<port>8080</port>
 	<service-package>com.track.cat.custom.serivce</service-package>
 	<filter-package>com.track.cat.custom.filter</filter-package>
 	<http-channel-size>64</http-channel-size>
-</config>
+
+
+	<beans>
+		<bean id="testService" class="com.track.cat.custom.serivce.TestService">
+			<property key="a" value="2" />
+			<property key="b" value="abc" />
+			<property key="c" value="123123" />
+			<property key="d" value="123" />
+			<property key="e" value="12.21" />
+			<property key="f" value="12.3123" />
+			<property key="g" value="a" />
+			<property key="test2" ref="com.track.cat.custom.serivce.TestService2" />
+		</bean>
+
+	</beans>
+</root>
