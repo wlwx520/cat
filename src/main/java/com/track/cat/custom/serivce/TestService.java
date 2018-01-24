@@ -27,7 +27,10 @@ public class TestService implements IService {
 	private TestService2 test2;
 	@AutoLifeCycle
 	private Character g;
-	
+
+	@Override
+	public void init() {
+	}
 
 	@Handler(value = "/text", method = { HttpMethod.POST, HttpMethod.GET })
 	public Result test(Invocation invocation) {

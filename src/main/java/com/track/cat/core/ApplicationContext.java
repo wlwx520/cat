@@ -15,6 +15,8 @@ import org.dom4j.Element;
 import com.track.cat.core.annotation.AutoLifeCycle;
 import com.track.cat.core.exception.CatSystemException;
 import com.track.cat.core.exception.ContextXmlError;
+import com.track.cat.core.interfaces.IFilter;
+import com.track.cat.core.interfaces.IService;
 
 @SuppressWarnings("unchecked")
 public class ApplicationContext {
@@ -53,7 +55,7 @@ public class ApplicationContext {
 		return instance;
 	}
 
-	public <T> T getBean(Class<T> clz) {
+	public <T extends IService> T getService(Class<T> clz) {
 		LOGGER.debug("get bean of " + clz.getName());
 		if (BEANS.containsKey(clz)) {
 			return (T) BEANS.get(clz);
@@ -77,7 +79,45 @@ public class ApplicationContext {
 					setField(field, newInstance, propertyEle);
 				}
 			}
+
+			newInstance.init();
+
 			LOGGER.debug("bean of " + clz.getName() + " created");
+
+			BEANS.put(clz, newInstance);
+			return newInstance;
+		} catch (SecurityException | IllegalArgumentException e) {
+			throw new CatSystemException(e);
+		}
+	}
+
+	public <T extends IFilter> T getFilter(Class<T> clz) {
+		LOGGER.debug("get bean of " + clz.getName());
+		if (BEANS.containsKey(clz)) {
+			return (T) BEANS.get(clz);
+		}
+		LOGGER.debug("bean of " + clz.getName() + " is not found ,prepare to create");
+
+		try {
+			T newInstance = newInstance(clz);
+
+			HashMap<String, Element> properties = getProperties(clz);
+
+			Field[] fields = clz.getDeclaredFields();
+
+			for (Field field : fields) {
+				if (field.getAnnotation(AutoLifeCycle.class) != null) {
+					if (properties == null) {
+						throw new ContextXmlError(clz.getName() + " is not found in context xml");
+					}
+					field.setAccessible(true);
+					Element propertyEle = properties.get(field.getName());
+					setField(field, newInstance, propertyEle);
+				}
+			}
+
+			LOGGER.debug("bean of " + clz.getName() + " created");
+
 			BEANS.put(clz, newInstance);
 			return newInstance;
 		} catch (SecurityException | IllegalArgumentException e) {
@@ -127,8 +167,8 @@ public class ApplicationContext {
 	private <T> void setRef(Field field, T newInstance, Element propertyEle) {
 		String className = propertyEle.attributeValue("ref");
 		try {
-			Class<?> clz = Class.forName(className);
-			field.set(newInstance, getBean(clz));
+			Class<? extends IService> clz = (Class<? extends IService>) Class.forName(className);
+			field.set(newInstance, getService(clz));
 		} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException e) {
 			throw new ContextXmlError(className + " is not found");
 		}

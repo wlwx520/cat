@@ -63,7 +63,7 @@ public class HandlerManager {
 			}
 
 			@SuppressWarnings("unchecked")
-			IService newInstance = ApplicationContext.instance().getBean((Class<IService>) clz);
+			IService newInstance = ApplicationContext.instance().getService((Class<IService>) clz);
 
 			String parentValue = service.value();
 

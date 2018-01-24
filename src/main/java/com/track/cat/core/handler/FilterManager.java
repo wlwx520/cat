@@ -69,7 +69,7 @@ public class FilterManager {
 			}
 
 			@SuppressWarnings("unchecked")
-			IFilter newInstance = ApplicationContext.instance().getBean((Class<IFilter>) clz);
+			IFilter newInstance = ApplicationContext.instance().getFilter((Class<IFilter>) clz);
 
 			int index = filter.index();
 

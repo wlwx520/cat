@@ -10,6 +10,11 @@ import com.track.cat.core.interfaces.IService;
 
 @Service("/test2")
 public class TestService2 implements IService {
+	
+	@Override
+	public void init() {
+
+	}
 
 	@Handler(value = "/text", method = { HttpMethod.POST, HttpMethod.GET })
 	public Result test(Invocation invocation) {
@@ -21,4 +26,5 @@ public class TestService2 implements IService {
 	public Result test2(Invocation invocation) {
 		return ResultBuilder.buildResult(0);
 	}
+
 }
