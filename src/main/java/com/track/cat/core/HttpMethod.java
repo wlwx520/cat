@@ -1,4 +1,4 @@
-package com.track.cat.core.handler;
+package com.track.cat.core;
 
 public enum HttpMethod {
 	POST, GET, FILE

@@ -1,4 +1,4 @@
-package com.track.cat.core.handler;
+package com.track.cat.core;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,10 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
-import com.track.cat.core.ApplicationContext;
-import com.track.cat.core.Definiens;
-import com.track.cat.core.Invocation;
-import com.track.cat.core.Result;
 import com.track.cat.core.annotation.Filter;
 import com.track.cat.core.exception.CatSystemException;
 import com.track.cat.core.interfaces.IFilter;

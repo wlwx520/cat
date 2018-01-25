@@ -1,4 +1,4 @@
-package com.track.cat.core.handler;
+package com.track.cat.core;
 
 import com.track.cat.core.interfaces.IInvoker;
 

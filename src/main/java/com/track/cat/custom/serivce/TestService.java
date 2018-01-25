@@ -1,11 +1,11 @@
 package com.track.cat.custom.serivce;
 
+import com.track.cat.core.HttpMethod;
 import com.track.cat.core.Invocation;
 import com.track.cat.core.Result;
 import com.track.cat.core.annotation.AutoLifeCycle;
 import com.track.cat.core.annotation.Handler;
 import com.track.cat.core.annotation.Service;
-import com.track.cat.core.handler.HttpMethod;
 import com.track.cat.core.http.ResultBuilder;
 import com.track.cat.core.interfaces.IService;
 

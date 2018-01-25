@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.track.cat.core.handler.HttpMethod;
+import com.track.cat.core.HttpMethod;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
