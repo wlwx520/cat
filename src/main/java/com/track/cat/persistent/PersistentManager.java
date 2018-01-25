@@ -27,6 +27,7 @@ import com.track.cat.util.FileUtil;
 public class PersistentManager {
 	private static final Logger LOGGER = Logger.getLogger(PersistentManager.class);
 	private static final Map<String, Class<?>> PERSISTENT_TEMPLATES = new ConcurrentHashMap<>();
+	private static final Map<String, String> RELATIONS = new ConcurrentHashMap<>();
 
 	public static void main(String[] args) {
 		init();
@@ -167,13 +168,11 @@ public class PersistentManager {
 
 	}
 
-	private static Map<String, String> relations = new ConcurrentHashMap<>();
-
 	private static void buildRelationTable(Field field, Field otherField) {
 		String name = field.toString().replaceAll("\\.", "").replaceAll(" ", "") + "_" + otherField.toString().replaceAll("\\.", "").replaceAll(" ", "");
 		String otherName = otherField.toString().replaceAll("\\.", "").replaceAll(" ", "") + "_" + field.toString().replaceAll("\\.", "").replaceAll(" ", "");
 
-		if (relations.containsKey(name) || relations.containsKey(otherName)) {
+		if (RELATIONS.containsKey(name) || RELATIONS.containsKey(otherName)) {
 			return;
 		}
 
@@ -195,8 +194,8 @@ public class PersistentManager {
 			throw new CatSqlExcption(e);
 		}
 
-		relations.put(name, name);
-		relations.put(otherName, name);
+		RELATIONS.put(name, name);
+		RELATIONS.put(otherName, name);
 
 	}
 
