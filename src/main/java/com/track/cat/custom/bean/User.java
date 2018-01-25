@@ -5,14 +5,13 @@ import java.util.List;
 import com.track.cat.persistent.PersistentBean;
 import com.track.cat.persistent.annotation.Column;
 import com.track.cat.persistent.annotation.Persistent;
-import com.track.cat.persistent.annotation.PrimaryKeyAutoincrement;
 import com.track.cat.persistent.annotation.SimpleRelation;
 
 @Persistent(table = "user")
 public class User extends PersistentBean {
 	@Column
 	private String name;
-	@PrimaryKeyAutoincrement
+	@Column
 	private int age;
 	@Column
 	private long idCardNum;

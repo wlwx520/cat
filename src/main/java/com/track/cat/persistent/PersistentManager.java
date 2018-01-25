@@ -32,6 +32,7 @@ public class PersistentManager {
 	private static final Logger LOGGER = Logger.getLogger(PersistentManager.class);
 	private static final Map<String, Class<?>> PERSISTENT_TEMPLATES = new ConcurrentHashMap<>();
 	private static final Object LOCK = new Object();
+	public static final String NULL = "Persisten Null";
 
 	private static final PersistentManager instance = new PersistentManager();
 
@@ -297,7 +298,7 @@ public class PersistentManager {
 		try {
 			if (CheckUtil.checkText(type)) {
 				sqlValue.append("'");
-				sqlValue.append(field.get(bean).toString());
+				sqlValue.append(field.get(bean) == null ? NULL : field.get(bean).toString());
 				sqlValue.append("'");
 			} else if (CheckUtil.checkNumber(type) || CheckUtil.checkDecimal(type)) {
 				sqlValue.append(field.get(bean).toString());
@@ -408,7 +409,7 @@ public class PersistentManager {
 		try {
 			if (CheckUtil.checkText(type)) {
 				sql.append("'");
-				sql.append(field.get(bean).toString());
+				sql.append(field.get(bean) == null ? NULL : field.get(bean).toString());
 				sql.append("'");
 			} else if (CheckUtil.checkNumber(type) || CheckUtil.checkDecimal(type)) {
 				sql.append(field.get(bean).toString());
@@ -429,10 +430,6 @@ public class PersistentManager {
 
 	@SuppressWarnings("unchecked")
 	public <T extends PersistentBean> List<T> query(T bean, String... conditions) {
-		if (bean.cat_static_table_primary_key == -1) {
-			return new ArrayList<>();
-		}
-
 		List<String> conditionList;
 		if (conditions != null && conditions.length != 0) {
 			conditionList = Arrays.asList(conditions);
@@ -448,18 +445,24 @@ public class PersistentManager {
 
 		StringBuilder sql = new StringBuilder();
 
-		sql.append(
-				"SELECT * FROM " + table + " WHERE " + PersistentBean.ID + " = " + bean.cat_static_table_primary_key);
+		sql.append("SELECT * FROM " + table + " WHERE 1 = 1");
+
+		if (conditionList.contains(PersistentBean.ID)) {
+			sql.append(" and " + PersistentBean.ID + " = " + bean.cat_static_table_primary_key);
+		}
 
 		Field[] fields = clz.getDeclaredFields();
 		if (fields != null && fields.length > 0) {
 			for (Field field : fields) {
 				field.setAccessible(true);
 				Column column = field.getAnnotation(Column.class);
+				PrimaryKeyAutoincrement autoincrement = field.getAnnotation(PrimaryKeyAutoincrement.class);
 				SimpleRelation simpleRelation = field.getAnnotation(SimpleRelation.class);
 				try {
 					if (column != null) {
 						queryColumn(bean, conditionList, sql, field);
+					} else if (autoincrement != null) {
+						queryKey(bean, conditionList, sql, field);
 					} else if (simpleRelation != null) {
 						querySimpleRelation(bean, conditionList, sql, field);
 					}
@@ -532,8 +535,9 @@ public class PersistentManager {
 			Object listF = field.get(bean);
 			Object list = listF;
 			if (CheckUtil.checkText(field.getType())) {
+				sql.append(" and " + field.getName() + " = ");
 				sql.append("'");
-				sql.append(" and " + field.getName() + " = " + list.toString());
+				sql.append(list.toString());
 				sql.append("'");
 			} else {
 				sql.append(" and " + field.getName() + " = " + list.toString());
@@ -541,10 +545,26 @@ public class PersistentManager {
 		}
 	}
 
+	private <T extends PersistentBean> void queryKey(T bean, List<String> conditionList, StringBuilder sql, Field field)
+			throws IllegalAccessException {
+		if (conditionList.contains(field.getName())) {
+			Object listF = field.get(bean);
+			Object list = listF;
+			if (CheckUtil.checkText(field.getType())) {
+				sql.append(" and " + PersistentBean.ID + " = ");
+				sql.append("'");
+				sql.append(list.toString());
+				sql.append("'");
+			} else {
+				sql.append(" and " + PersistentBean.ID  + " = " + list.toString());
+			}
+		}
+	}
+
 	private <T extends PersistentBean> void setSimpleRelationField(ResultSet rs, T t, Field field)
 			throws SQLException, InstantiationException, IllegalAccessException {
 		String ids = rs.getString(field.getName());
-		if (ids != null && !ids.trim().equals("")) {
+		if (ids != null && !ids.trim().equals("") || !ids.equals(NULL)) {
 			String[] split = ids.split("#");
 			if (!List.class.isAssignableFrom(field.getType())) {
 				throw new CatSqlExcption("field must be assignable from List");
@@ -592,6 +612,9 @@ public class PersistentManager {
 				field.set(t, rs.getBoolean(field.getName()));
 			} else if (type.isAssignableFrom(char.class) || type.isAssignableFrom(Character.class)) {
 				field.set(t, rs.getString(field.getName()).charAt(0));
+			} else if (type.isAssignableFrom(String.class)) {
+				String value = rs.getString(field.getName());
+				field.set(t, value.equals(NULL) ? null : value);
 			}
 		} catch (IllegalArgumentException | IllegalAccessException | SQLException e) {
 			e.printStackTrace();
