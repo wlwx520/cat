@@ -1,10 +1,7 @@
 package com.track.cat.custom.bean;
 
-import java.util.List;
-
 import com.track.cat.persistent.PersistentBean;
 import com.track.cat.persistent.annotation.Column;
-import com.track.cat.persistent.annotation.ComplexRelation;
 import com.track.cat.persistent.annotation.Persistent;
 import com.track.cat.persistent.annotation.PrimaryKeyAutoincrement;
 
@@ -26,7 +23,69 @@ public class Role extends PersistentBean {
 	private double d;
 	@Column
 	private float f;
-	
-	@ComplexRelation("complexRoles")
-	private List<User> complexUsers;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public long getIdCardNum() {
+		return idCardNum;
+	}
+
+	public void setIdCardNum(long idCardNum) {
+		this.idCardNum = idCardNum;
+	}
+
+	public boolean isFlg() {
+		return flg;
+	}
+
+	public void setFlg(boolean flg) {
+		this.flg = flg;
+	}
+
+	public char getCh() {
+		return ch;
+	}
+
+	public void setCh(char ch) {
+		this.ch = ch;
+	}
+
+	public short getSh() {
+		return sh;
+	}
+
+	public void setSh(short sh) {
+		this.sh = sh;
+	}
+
+	public double getD() {
+		return d;
+	}
+
+	public void setD(double d) {
+		this.d = d;
+	}
+
+	public float getF() {
+		return f;
+	}
+
+	public void setF(float f) {
+		this.f = f;
+	}
+
 }

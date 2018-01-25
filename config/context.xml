@@ -4,6 +4,7 @@
 	<filter-package>com.track.cat.custom.filter</filter-package>
 	<persistent-bean-package>com.track.cat.custom.bean</persistent-bean-package>
 	<http-channel-size>64</http-channel-size>
+	<db-clear>true</db-clear>
 
 
 	<beans>

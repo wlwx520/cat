@@ -16,6 +16,7 @@ public class Definiens {
 	public static final String FILTER_PACKAGE = get("filter-package");
 	public static final String PERSISTENT_BEAN_PACKAGE = get("persistent-bean-package");
 	public static final String HTTP_CHANNEL_SIZE = get("http-channel-size");
+	public static final String DB_CLEAR = get("db-clear");
 
 	public static String get(String key) {
 		return ROOT_ELEMENT.elementText(key);
