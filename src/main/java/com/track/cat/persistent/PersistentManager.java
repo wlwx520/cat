@@ -42,7 +42,7 @@ public class PersistentManager {
 
 	public static void init() {
 		if (Definiens.DB_CLEAR.equals("true")) {
-			File file = new File(FileUtil.getAppRoot() + File.separator + "resource" + File.separator + "LocalDB");
+			File file = new File(FileUtil.getAppRoot() + File.separator + Definiens.DB_PATH);
 			if (file.exists()) {
 				file.delete();
 				try {
