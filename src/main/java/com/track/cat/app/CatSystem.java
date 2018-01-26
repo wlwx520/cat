@@ -9,8 +9,8 @@ import com.track.cat.core.LoggerManager;
 import com.track.cat.core.http.HttpService;
 import com.track.cat.persistent.PersistentManager;
 
-public class App {
-	private static final Logger LOGGER = Logger.getLogger(App.class);
+public class CatSystem {
+	private static final Logger LOGGER = Logger.getLogger(CatSystem.class);
 
 	public static void start(String path) {
 		Definiens.init(path);

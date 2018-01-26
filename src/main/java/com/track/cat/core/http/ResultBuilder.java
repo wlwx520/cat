@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONObject;
 import com.track.cat.core.Result;
+import com.track.cat.core.exception.ErrorCodeExcption;
 
 public class ResultBuilder {
 	private ResultBuilder() {
@@ -49,5 +50,14 @@ public class ResultBuilder {
 			String info = error.get(code);
 			return info == null ? "Unknown Error" : info;
 		}
+
 	}
+
+	public static void addErrorCode(int code, String msg) throws ErrorCodeExcption {
+		if (ErrorCode.error.containsKey(code)) {
+			throw new ErrorCodeExcption("this code is exists , code = " + code);
+		}
+		ErrorCode.error.put(code, msg);
+	}
+
 }
