@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.track.cat.core.annotation.Filter;
 import com.track.cat.core.exception.CatSystemException;
+import com.track.cat.core.filter.LogDebugFilter;
 import com.track.cat.core.interfaces.IFilter;
 import com.track.cat.core.interfaces.IInvoker;
 import com.track.cat.util.FileUtil;
@@ -22,6 +23,11 @@ public class FilterManager {
 
 	public static void init() {
 		List<BaseFilter> inners = new ArrayList<>();
+
+		IFilter newInstance = ApplicationContext.instance().getFilter(LogDebugFilter.class);
+
+		inners.add(new BaseFilter(0, newInstance));
+
 		String path = FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator + "java"
 				+ File.separator + Definiens.FILTER_PACKAGE.replaceAll("\\.", "/");
 

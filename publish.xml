@@ -24,6 +24,7 @@
 				<include>config/**</include>
 				<include>upload</include>
 				<include>web/**</include>
+				<include>resource/**</include>
 			</includes>
 		</fileSet>
 	</fileSets>
