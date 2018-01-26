@@ -1,0 +1,9 @@
+1.引入maven依赖。
+	<dependency>
+		<groupId>track</groupId>
+		<artifactId>cat</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+2.根据example中的context.xml填写配置。
+3.附log4j.properties的简单配置。
+4.启动：App.start([context.xml的相对项目根目录的路径]);
