@@ -55,6 +55,40 @@ public class ApplicationContext {
 		return instance;
 	}
 
+	public <T> T getBean(Class<T> clz) {
+		LOGGER.debug("get bean of " + clz.getName());
+		if (BEANS.containsKey(clz)) {
+			return (T) BEANS.get(clz);
+		}
+		LOGGER.debug("bean of " + clz.getName() + " is not found ,prepare to create");
+
+		try {
+			T newInstance = newInstance(clz);
+
+			HashMap<String, Element> properties = getProperties(clz);
+
+			Field[] fields = clz.getDeclaredFields();
+
+			for (Field field : fields) {
+				if (field.getAnnotation(AutoLifeCycle.class) != null) {
+					if (properties == null) {
+						throw new ContextXmlError(clz.getName() + " is not found in context xml");
+					}
+					field.setAccessible(true);
+					Element propertyEle = properties.get(field.getName());
+					setField(field, newInstance, propertyEle);
+				}
+			}
+
+			LOGGER.debug("bean of " + clz.getName() + " created");
+
+			BEANS.put(clz, newInstance);
+			return newInstance;
+		} catch (SecurityException | IllegalArgumentException e) {
+			throw new CatSystemException(e);
+		}
+	}
+
 	public <T extends IService> T getService(Class<T> clz) {
 		LOGGER.debug("get bean of " + clz.getName());
 		if (BEANS.containsKey(clz)) {
@@ -167,8 +201,8 @@ public class ApplicationContext {
 	private <T> void setRef(Field field, T newInstance, Element propertyEle) {
 		String className = propertyEle.attributeValue("ref");
 		try {
-			Class<? extends IService> clz = (Class<? extends IService>) Class.forName(className);
-			field.set(newInstance, getService(clz));
+			Class<?> clz = (Class<?>) Class.forName(className);
+			field.set(newInstance, getBean(clz));
 		} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException e) {
 			throw new ContextXmlError(className + " is not found");
 		}
