@@ -3,6 +3,8 @@ package com.track.cat.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.vertx.ext.web.FileUpload;
+
 public class Invocation {
 	private Map<String, Object> attachments = new HashMap<String, Object>();
 	public static final String MAPPING = "constants_mapping";
@@ -16,6 +18,13 @@ public class Invocation {
 
 	public <T> void setAttachment(String key, T value) {
 		attachments.put(key, value);
+	}
+
+	public static Invocation encode(Map<String, String> data, Map<String, FileUpload> fileUploads) {
+		Invocation invocation = new Invocation();
+		invocation.setAttachment(REQUEST, data);
+		invocation.setAttachment(UPLOAD_FILES, fileUploads);
+		return invocation;
 	}
 
 }
