@@ -21,8 +21,8 @@
 			<directory>${project.basedir}</directory>
 			<outputDirectory>/</outputDirectory>
 			<includes>
-				<include>import.sh</include>
-				<include>import.bat</include>
+				<include>readme.txt</include>
+				<include>example/**</include>
 			</includes>
 		</fileSet>
 	</fileSets>
