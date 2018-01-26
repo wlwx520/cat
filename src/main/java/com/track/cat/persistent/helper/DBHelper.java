@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
+import com.track.cat.core.Definiens;
 import com.track.cat.core.exception.CatSqlExcption;
 import com.track.cat.util.FileUtil;
 
@@ -19,7 +20,8 @@ public class DBHelper {
 			bds.setMinIdle(5);
 			bds.setMaxIdle(20);
 			bds.setMaxActive(30);
-			String db = FileUtil.getAppRoot() + File.separator + "resource" + File.separator + "LocalDB";
+			String db = FileUtil.getAppRoot() + File.separator + Definiens.DB_PATH;
+			FileUtil.createDirAndFileIfNotExists(new File(db));
 			bds.setUrl("jdbc:sqlite:" + db);
 			return bds.getConnection();
 		} catch (SQLException e) {

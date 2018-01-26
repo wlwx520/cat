@@ -33,8 +33,8 @@ import io.vertx.ext.web.handler.StaticHandler;
 public class HttpService extends AbstractVerticle {
 	private static final Logger LOGGER = Logger.getLogger(HttpService.class);
 	private static Vertx gVertx = null;
-	private static String webPath = "web";
-	private static String uploadPath = "upload";
+	private static String webPath = Definiens.WEB_PATH;
+	private static String uploadPath =  Definiens.UPLOAD_PATH;
 
 	public static void init() {
 		VertxOptions vp = new VertxOptions();
@@ -45,6 +45,9 @@ public class HttpService extends AbstractVerticle {
 		DeploymentOptions p = new DeploymentOptions();
 		p.setInstances(Integer.valueOf(Definiens.HTTP_CHANNEL_SIZE));
 		gVertx.deployVerticle(HttpService.class.getName(), p);
+		
+		new File(webPath).mkdirs();
+		new File(uploadPath).mkdirs();
 
 		LOGGER.info("http channel size = " + Definiens.HTTP_CHANNEL_SIZE);
 		LOGGER.info("system upload root = " + uploadPath);

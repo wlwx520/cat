@@ -8,6 +8,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 public class XmlUtil {
+
 	public static Element get(String path) {
 		try {
 			SAXReader saxReader = new SAXReader();
