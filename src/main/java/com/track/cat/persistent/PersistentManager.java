@@ -446,7 +446,10 @@ public class PersistentManager {
 		StringBuilder sql = new StringBuilder();
 
 		sql.append("SELECT * FROM " + table + " WHERE 1 = 1");
-		sql.append(" and " + extCondition);
+
+		if (extCondition != null && !extCondition.trim().equals("")) {
+			sql.append(" and " + extCondition);
+		}
 
 		if (conditionList.contains(PersistentBean.ID)) {
 			sql.append(" and " + PersistentBean.ID + " = " + bean.cat_static_table_primary_key);
@@ -503,6 +506,66 @@ public class PersistentManager {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public <T extends PersistentBean> long queryCountExt(T bean, String extCondition, String... conditions) {
+		List<String> conditionList;
+		if (conditions != null && conditions.length != 0) {
+			conditionList = Arrays.asList(conditions);
+		} else {
+			conditionList = new ArrayList<>();
+		}
+		long count = -1;
+		Class<? extends PersistentBean> clz = bean.getClass();
+		Persistent persistent = clz.getAnnotation(Persistent.class);
+		assert (persistent != null);
+		String table = persistent.table();
+
+		StringBuilder sql = new StringBuilder();
+
+		sql.append("SELECT COUNT(*) FROM " + table + " WHERE 1 = 1");
+
+		if (extCondition != null && !extCondition.trim().equals("")) {
+			sql.append(" and " + extCondition);
+		}
+
+		if (conditionList.contains(PersistentBean.ID)) {
+			sql.append(" and " + PersistentBean.ID + " = " + bean.cat_static_table_primary_key);
+		}
+
+		Field[] fields = clz.getDeclaredFields();
+		if (fields != null && fields.length > 0) {
+			for (Field field : fields) {
+				field.setAccessible(true);
+				Column column = field.getAnnotation(Column.class);
+				PrimaryKeyAutoincrement autoincrement = field.getAnnotation(PrimaryKeyAutoincrement.class);
+				SimpleRelation simpleRelation = field.getAnnotation(SimpleRelation.class);
+				try {
+					if (column != null) {
+						queryColumn(bean, conditionList, sql, field);
+					} else if (autoincrement != null) {
+						queryKey(bean, conditionList, sql, field);
+					} else if (simpleRelation != null) {
+						querySimpleRelation(bean, conditionList, sql, field);
+					}
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					throw new CatSqlExcption(e);
+				}
+			}
+		}
+
+		try {
+			Connection connection = DBHelper.getConnection();
+			PreparedStatement pst = connection.prepareStatement(sql.toString());
+			ResultSet rs = pst.executeQuery();
+
+			if (rs.next()) {
+				count = rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -581,6 +644,63 @@ public class PersistentManager {
 		return result;
 	}
 
+	public <T extends PersistentBean> long queryCount(T bean, String... conditions) {
+		List<String> conditionList;
+		if (conditions != null && conditions.length != 0) {
+			conditionList = Arrays.asList(conditions);
+		} else {
+			conditionList = new ArrayList<>();
+		}
+
+		long count = -1;
+		Class<? extends PersistentBean> clz = bean.getClass();
+		Persistent persistent = clz.getAnnotation(Persistent.class);
+		assert (persistent != null);
+		String table = persistent.table();
+
+		StringBuilder sql = new StringBuilder();
+
+		sql.append("SELECT COUNT(*) FROM " + table + " WHERE 1 = 1");
+
+		if (conditionList.contains(PersistentBean.ID)) {
+			sql.append(" and " + PersistentBean.ID + " = " + bean.cat_static_table_primary_key);
+		}
+
+		Field[] fields = clz.getDeclaredFields();
+		if (fields != null && fields.length > 0) {
+			for (Field field : fields) {
+				field.setAccessible(true);
+				Column column = field.getAnnotation(Column.class);
+				PrimaryKeyAutoincrement autoincrement = field.getAnnotation(PrimaryKeyAutoincrement.class);
+				SimpleRelation simpleRelation = field.getAnnotation(SimpleRelation.class);
+				try {
+					if (column != null) {
+						queryColumn(bean, conditionList, sql, field);
+					} else if (autoincrement != null) {
+						queryKey(bean, conditionList, sql, field);
+					} else if (simpleRelation != null) {
+						querySimpleRelation(bean, conditionList, sql, field);
+					}
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					throw new CatSqlExcption(e);
+				}
+			}
+		}
+
+		try {
+			Connection connection = DBHelper.getConnection();
+			PreparedStatement pst = connection.prepareStatement(sql.toString());
+			ResultSet rs = pst.executeQuery();
+
+			if (rs.next()) {
+				count = rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+
 	@SuppressWarnings("unchecked")
 	private <T extends PersistentBean> void querySimpleRelation(T bean, List<String> conditionList, StringBuilder sql,
 			Field field) throws IllegalAccessException {
@@ -614,7 +734,7 @@ public class PersistentManager {
 			if (CheckUtil.checkText(field.getType())) {
 				sql.append(" and " + field.getName() + " = ");
 				sql.append("'");
-				sql.append(list.toString());
+				sql.append(list == null ? NULL : list.toString());
 				sql.append("'");
 			} else {
 				sql.append(" and " + field.getName() + " = " + list.toString());
