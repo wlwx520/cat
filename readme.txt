@@ -1,7 +1,7 @@
 1.引入maven依赖。
 	<dependency>
 		<groupId>track</groupId>
-		<artifactId>cat</artifactId>
+		<artifactId>paint</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
 2.根据example中的context.xml填写配置。
