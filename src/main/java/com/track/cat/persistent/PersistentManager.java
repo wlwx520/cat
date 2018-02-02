@@ -819,7 +819,7 @@ public class PersistentManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends PersistentBean> void delete(T bean) {
+	public <T extends PersistentBean> boolean delete(T bean) {
 		Class<? extends PersistentBean> clz = bean.getClass();
 		Persistent persistent = clz.getAnnotation(Persistent.class);
 		assert (persistent != null);
@@ -872,9 +872,9 @@ public class PersistentManager {
 		try {
 			Connection connection = DBHelper.getConnection();
 			PreparedStatement pst = connection.prepareStatement(sql.toString());
-			pst.execute();
+			return pst.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new CatSqlExcption(e);
 		}
 
 	}
