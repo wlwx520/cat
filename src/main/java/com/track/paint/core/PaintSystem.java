@@ -5,8 +5,8 @@ import org.apache.log4j.Logger;
 import com.track.paint.core.http.HttpService;
 import com.track.paint.persistent.PersistentManager;
 
-public class CatSystem {
-	private static final Logger LOGGER = Logger.getLogger(CatSystem.class);
+public class PaintSystem {
+	private static final Logger LOGGER = Logger.getLogger(PaintSystem.class);
 
 	public static void start(String path) {
 		Definiens.init(path);
