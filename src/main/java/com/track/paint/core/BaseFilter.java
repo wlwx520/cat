@@ -1,6 +1,6 @@
 package com.track.paint.core;
 
-import com.track.paint.core.interfaces1.IFilter;
+import com.track.paint.core.interfaces.IFilter;
 
 public class BaseFilter {
 	private int index;

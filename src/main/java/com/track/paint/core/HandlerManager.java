@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 import com.track.paint.core.annotation.Handler;
 import com.track.paint.core.annotation.Service;
 import com.track.paint.core.exception.SystemException;
-import com.track.paint.core.interfaces1.IInvoker;
-import com.track.paint.core.interfaces1.IService;
+import com.track.paint.core.interfaces.IInvoker;
+import com.track.paint.core.interfaces.IService;
 import com.track.paint.util.FileUtil;
 
 public class HandlerManager {

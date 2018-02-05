@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import com.track.paint.core.Invocation;
 import com.track.paint.core.Result;
 import com.track.paint.core.annotation.Filter;
-import com.track.paint.core.interfaces1.IFilter;
-import com.track.paint.core.interfaces1.IInvoker;
+import com.track.paint.core.interfaces.IFilter;
+import com.track.paint.core.interfaces.IInvoker;
 
 import io.vertx.ext.web.FileUpload;
 

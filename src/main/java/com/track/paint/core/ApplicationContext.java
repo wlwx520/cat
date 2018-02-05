@@ -14,9 +14,9 @@ import org.dom4j.Element;
 
 import com.track.paint.core.annotation.AutoLifeCycle;
 import com.track.paint.core.exception.SystemException;
+import com.track.paint.core.interfaces.IFilter;
+import com.track.paint.core.interfaces.IService;
 import com.track.paint.core.exception.ContextXmlError;
-import com.track.paint.core.interfaces1.IFilter;
-import com.track.paint.core.interfaces1.IService;
 
 @SuppressWarnings("unchecked")
 public class ApplicationContext {

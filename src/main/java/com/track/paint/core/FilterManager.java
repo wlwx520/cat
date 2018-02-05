@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 import com.track.paint.core.annotation.Filter;
 import com.track.paint.core.exception.SystemException;
 import com.track.paint.core.filter.LogDebugFilter;
-import com.track.paint.core.interfaces1.IFilter;
-import com.track.paint.core.interfaces1.IInvoker;
+import com.track.paint.core.interfaces.IFilter;
+import com.track.paint.core.interfaces.IInvoker;
 import com.track.paint.util.FileUtil;
 
 public class FilterManager {

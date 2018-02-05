@@ -1,6 +1,6 @@
 package com.track.paint.core;
 
-import com.track.paint.core.interfaces1.IInvoker;
+import com.track.paint.core.interfaces.IInvoker;
 
 public class BaseHandler {
 	private HttpMethod[] methods;
