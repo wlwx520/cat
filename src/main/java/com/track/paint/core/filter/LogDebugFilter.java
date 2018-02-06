@@ -23,8 +23,7 @@ public class LogDebugFilter implements IFilter {
 		Map<String, String> request = invocation.getAttachment(Invocation.REQUEST);
 		Set<FileUpload> fileUploads = invocation.getAttachment(Invocation.UPLOAD_FILES);
 		StringBuilder debug = new StringBuilder();
-		debug.append("\n");
-		debug.append(">>>>>> ");
+		debug.append(" ");
 		debug.append("mapping = ");
 		debug.append(mapping);
 		debug.append("\n");
