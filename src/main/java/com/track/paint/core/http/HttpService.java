@@ -107,7 +107,7 @@ public class HttpService extends AbstractVerticle {
 			Result result = HandlerManager.handler(invocation);
 			HttpServerResponse response = context.response();
 			HttpServerRequest request = context.request();
-			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+//			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
 			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
@@ -140,7 +140,7 @@ public class HttpService extends AbstractVerticle {
 			Result result = HandlerManager.handler(invocation);
 			HttpServerResponse response = context.response();
 			HttpServerRequest request = context.request();
-			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+//			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
 			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
@@ -177,7 +177,7 @@ public class HttpService extends AbstractVerticle {
 
 			HttpServerResponse response = context.response();
 			HttpServerRequest request = context.request();
-			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+//			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
 			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
