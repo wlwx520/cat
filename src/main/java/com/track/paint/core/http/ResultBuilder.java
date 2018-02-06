@@ -11,18 +11,18 @@ public class ResultBuilder {
 	private ResultBuilder() {
 	}
 
-	private static final String RESULT = "result";
+	private static final String STATUS = "status";
 	private static final String INFO = "info";
 
 	public static JSONObject build(int code) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put(RESULT, code);
+		jsonObject.put(STATUS, code);
 		jsonObject.put(INFO, ErrorCode.getErrorInfo(code));
 		return jsonObject;
 	}
 
 	public static JSONObject build(int code, JSONObject jsonObject) {
-		jsonObject.put(RESULT, code);
+		jsonObject.put(STATUS, code);
 		jsonObject.put(INFO, ErrorCode.getErrorInfo(code));
 		return jsonObject;
 	}
