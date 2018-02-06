@@ -1,8 +1,8 @@
 package com.track.paint.core;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -12,7 +12,7 @@ import com.track.paint.core.exception.SystemException;
 import com.track.paint.core.filter.LogDebugFilter;
 import com.track.paint.core.interfaces.IFilter;
 import com.track.paint.core.interfaces.IInvoker;
-import com.track.paint.util.FileUtil;
+import com.track.paint.util.ScanUtil;
 
 public class FilterManager {
 	private static final Logger LOGGER = Logger.getLogger(FilterManager.class);
@@ -28,12 +28,12 @@ public class FilterManager {
 
 		inners.add(new BaseFilter(0, newInstance));
 
-		String path = FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator + "java"
-				+ File.separator + Definiens.FILTER_PACKAGE.replaceAll("\\.", "/");
+		LOGGER.info("scan the package to find filter in " + Definiens.FILTER_PACKAGE);
 
-		LOGGER.info("scan the package to find filter in " + path);
-
-		_scan(new File(path), "", inners);
+		Set<Class<?>> classes = ScanUtil.getClasses(Definiens.FILTER_PACKAGE);
+		classes.forEach(clz -> {
+			addFilter(clz, inners);
+		});
 
 		filters = inners.stream().sorted((a, b) -> {
 			return a.getIndex() - b.getIndex();
@@ -46,21 +46,8 @@ public class FilterManager {
 		});
 	}
 
-	private static void _scan(File root, String parent, List<BaseFilter> inners) {
-		FileUtil.subFile(root).forEach(file -> {
-			String name = file.getName();
-			addFilter(parent + "." + name, inners);
-		});
-
-		FileUtil.subDir(root).forEach(file -> {
-			String name = file.getName();
-			_scan(file, parent + "." + name, inners);
-		});
-	}
-
-	private static void addFilter(String name, List<BaseFilter> inners) {
+	private static void addFilter(Class<?> clz, List<BaseFilter> inners) {
 		try {
-			Class<?> clz = Class.forName(Definiens.FILTER_PACKAGE + name.replace(".java", ""));
 			if (!IFilter.class.isAssignableFrom(clz)) {
 				return;
 			}
@@ -77,7 +64,7 @@ public class FilterManager {
 
 			inners.add(new BaseFilter(index, newInstance));
 
-		} catch (ClassNotFoundException | SecurityException | IllegalArgumentException e) {
+		} catch (SecurityException | IllegalArgumentException e) {
 			throw new SystemException(e);
 		}
 	}

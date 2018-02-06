@@ -1,7 +1,7 @@
 package com.track.paint.core;
 
-import java.io.File;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -12,17 +12,19 @@ import com.track.paint.core.annotation.Service;
 import com.track.paint.core.exception.SystemException;
 import com.track.paint.core.interfaces.IInvoker;
 import com.track.paint.core.interfaces.IService;
-import com.track.paint.util.FileUtil;
+import com.track.paint.util.ScanUtil;
 
 public class HandlerManager {
 	private static final Logger LOGGER = Logger.getLogger(HandlerManager.class);
 	private static ConcurrentMap<String, BaseHandler> workers = new ConcurrentHashMap<>();
 
 	public static void init() {
-		String path = FileUtil.getAppRoot() + File.separator + "src" + File.separator + "main" + File.separator + "java"
-				+ File.separator + Definiens.SERVICE_PACKAGE.replaceAll("\\.", "/");
-		_scan(new File(path), "");
-		LOGGER.info("scan the package to find handler in " + path);
+		LOGGER.info("scan the package to find handler in " + Definiens.SERVICE_PACKAGE);
+
+		Set<Class<?>> classes = ScanUtil.getClasses(Definiens.SERVICE_PACKAGE);
+		classes.forEach(clz -> {
+			addWork(clz);
+		});
 
 		workers.forEach((k, v) -> {
 			String methods = "";
@@ -34,21 +36,8 @@ public class HandlerManager {
 		});
 	}
 
-	private static void _scan(File root, String parent) {
-		FileUtil.subFile(root).forEach(file -> {
-			String name = file.getName();
-			addWork(parent + "." + name);
-		});
-
-		FileUtil.subDir(root).forEach(file -> {
-			String name = file.getName();
-			_scan(file, parent + "." + name);
-		});
-	}
-
-	private static void addWork(String name) {
+	private static void addWork(Class<?> clz) {
 		try {
-			Class<?> clz = Class.forName(Definiens.SERVICE_PACKAGE + name.replace(".java", ""));
 			if (!IService.class.isAssignableFrom(clz)) {
 				return;
 			}
@@ -80,7 +69,7 @@ public class HandlerManager {
 					workers.put(parentValue + value, new BaseHandler(handler.method(), invoker));
 				}
 			}
-		} catch (ClassNotFoundException | SecurityException | IllegalArgumentException e) {
+		} catch (SecurityException | IllegalArgumentException e) {
 			throw new SystemException(e);
 		}
 	}
