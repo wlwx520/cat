@@ -25,6 +25,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -34,7 +36,7 @@ public class HttpService extends AbstractVerticle {
 	private static final Logger LOGGER = Logger.getLogger(HttpService.class);
 	private static Vertx gVertx = null;
 	private static String webPath = Definiens.WEB_PATH;
-	private static String uploadPath =  Definiens.UPLOAD_PATH;
+	private static String uploadPath = Definiens.UPLOAD_PATH;
 
 	public static void init() {
 		VertxOptions vp = new VertxOptions();
@@ -45,7 +47,7 @@ public class HttpService extends AbstractVerticle {
 		DeploymentOptions p = new DeploymentOptions();
 		p.setInstances(Integer.valueOf(Definiens.HTTP_CHANNEL_SIZE));
 		gVertx.deployVerticle(HttpService.class.getName(), p);
-		
+
 		new File(webPath).mkdirs();
 		new File(uploadPath).mkdirs();
 
@@ -103,7 +105,17 @@ public class HttpService extends AbstractVerticle {
 			invocation.setAttachment(Invocation.MAPPING, mapping);
 			invocation.setAttachment(Invocation.REQUEST, param);
 			Result result = HandlerManager.handler(invocation);
-			context.response().end(result.getAttachment(Result.RESPONSE).toString());
+			HttpServerResponse response = context.response();
+			HttpServerRequest request = context.request();
+			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+			response.putHeader("Access-Control-Allow-Credentials", "true");
+			response.putHeader("P3P", "CP=CAO PSA OUR");
+			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
+				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
+				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
+				response.putHeader("Access-Control-Max-Age", "120");
+			}
+			response.end(result.getAttachment(Result.RESPONSE).toString());
 		});
 	}
 
@@ -125,7 +137,17 @@ public class HttpService extends AbstractVerticle {
 			invocation.setAttachment(Invocation.MAPPING, mapping);
 			invocation.setAttachment(Invocation.REQUEST, param);
 			Result result = HandlerManager.handler(invocation);
-			context.response().end(result.getAttachment(Result.RESPONSE).toString());
+			HttpServerResponse response = context.response();
+			HttpServerRequest request = context.request();
+			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+			response.putHeader("Access-Control-Allow-Credentials", "true");
+			response.putHeader("P3P", "CP=CAO PSA OUR");
+			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
+				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
+				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
+				response.putHeader("Access-Control-Max-Age", "120");
+			}
+			response.end(result.getAttachment(Result.RESPONSE).toString());
 		});
 	}
 
@@ -151,7 +173,17 @@ public class HttpService extends AbstractVerticle {
 			invocation.setAttachment(Invocation.UPLOAD_FILES, fileUploads);
 			Result result = HandlerManager.handler(invocation);
 
-			context.response().end(result.getAttachment(Result.RESPONSE).toString());
+			HttpServerResponse response = context.response();
+			HttpServerRequest request = context.request();
+			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+			response.putHeader("Access-Control-Allow-Credentials", "true");
+			response.putHeader("P3P", "CP=CAO PSA OUR");
+			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
+				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
+				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
+				response.putHeader("Access-Control-Max-Age", "120");
+			}
+			response.end(result.getAttachment(Result.RESPONSE).toString());
 		});
 	}
 
