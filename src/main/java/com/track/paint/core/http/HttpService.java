@@ -110,6 +110,7 @@ public class HttpService extends AbstractVerticle {
 			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
+			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
 				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
 				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
@@ -142,6 +143,7 @@ public class HttpService extends AbstractVerticle {
 			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
+			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
 				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
 				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
@@ -178,6 +180,7 @@ public class HttpService extends AbstractVerticle {
 			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
+			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
 			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
 				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
 				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
