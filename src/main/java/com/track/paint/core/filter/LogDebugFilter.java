@@ -57,8 +57,13 @@ public class LogDebugFilter implements IFilter {
 		} else {
 			debug.append("fileUploads size = 0");
 		}
+		Result result = invoker.invoke(invocation);
+		debug.append("\n");
+		debug.append(">>>>>> ");
+		debug.append("response = ");
+		debug.append(result.getAttachment(Result.RESPONSE));
 		LOGGER.debug(debug.toString());
-		return invoker.invoke(invocation);
+		return result;
 	}
 
 }
