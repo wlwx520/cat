@@ -26,11 +26,9 @@ public class ScanUtil {
 				URL url = dirs.nextElement();
 				String protocol = url.getProtocol();
 				if ("file".equals(protocol)) {
-					System.err.println("file类型的扫描");
 					String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
 					findAndAddClassesInPackageByFile(packageName, filePath, recursive, classes);
 				} else if ("jar".equals(protocol)) {
-					System.err.println("jar类型的扫描");
 					JarFile jar;
 					try {
 						jar = ((JarURLConnection) url.openConnection()).getJarFile();
