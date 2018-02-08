@@ -1058,8 +1058,8 @@ public class PersistentManager {
 
 		try (Connection connection = DBHelper.getConnection();
 				PreparedStatement pst = connection.prepareStatement(sql.toString());) {
-
-			return pst.execute();
+			pst.execute();
+			return true;
 		} catch (SQLException e) {
 			throw new SystemException(e);
 		}

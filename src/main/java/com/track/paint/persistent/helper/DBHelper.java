@@ -16,10 +16,10 @@ public class DBHelper {
 		try {
 			BasicDataSource bds = new BasicDataSource();
 			bds.setDriverClassName("org.sqlite.JDBC");
-			bds.setInitialSize(1);
-			bds.setMinIdle(1);
-			bds.setMaxIdle(1);
-			bds.setMaxActive(1);
+			bds.setInitialSize(10);
+			bds.setMinIdle(5);
+			bds.setMaxIdle(20);
+			bds.setMaxActive(15);
 			String db = FileUtil.getAppRoot() + File.separator + Definiens.DB_PATH;
 			FileUtil.createDirAndFileIfNotExists(new File(db));
 			bds.setUrl("jdbc:sqlite:" + db);
