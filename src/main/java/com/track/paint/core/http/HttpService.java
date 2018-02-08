@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSONObject;
 import com.track.paint.core.BaseHandler;
 import com.track.paint.core.Definiens;
 import com.track.paint.core.HandlerManager;
@@ -89,35 +90,55 @@ public class HttpService extends AbstractVerticle {
 
 	private void post(Router router, String mapping) {
 		router.post(mapping).handler(context -> {
+			HttpServerResponse response = context.response();
 			Map<String, String> param = new HashMap<>();
-			MultiMap httpParam = context.request().params();
-			List<Map.Entry<String, String>> list = httpParam.entries();
-			for (Map.Entry<String, String> e : list) {
-				String key = e.getKey();
-				String value = e.getValue();
-				if (value == null || value.length() == 0) {
-					continue;
+
+			String type = context.request().getHeader("Content-Type");
+			if (type != null && (type.contains("text/plain") || type.contains("application/json;charset=UTF-8"))) {
+				try {
+					JSONObject jsonReq = JSONObject.parseObject(context.getBodyAsString());
+					jsonReq.forEach((k, v) -> {
+						param.put(k, v.toString());
+					});
+				} catch (Exception e) {
+					response.end(ResultBuilder.buildResult(0x10001).getAttachment(Result.RESPONSE).toString());
+					return;
 				}
-				param.put(key, value);
+			} else {
+				MultiMap httpParam = context.request().params();
+				List<Map.Entry<String, String>> list = httpParam.entries();
+				for (Map.Entry<String, String> e : list) {
+					String key = e.getKey();
+					String value = e.getValue();
+					if (value == null || value.length() == 0) {
+						continue;
+					}
+					param.put(key, value);
+				}
 			}
 
 			Invocation invocation = new Invocation();
 			invocation.setAttachment(Invocation.MAPPING, mapping);
 			invocation.setAttachment(Invocation.REQUEST, param);
 			Result result = HandlerManager.handler(invocation);
-			HttpServerResponse response = context.response();
-			HttpServerRequest request = context.request();
-//			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-			response.putHeader("Access-Control-Allow-Credentials", "true");
-			response.putHeader("P3P", "CP=CAO PSA OUR");
-			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
-				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
-				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
-				response.putHeader("Access-Control-Max-Age", "120");
-			}
+			// HttpServerRequest request = context.request();
+			// response.putHeader("Access-Control-Allow-Origin",
+			// request.getHeader("Origin"));
+			// response.putHeader("Access-Control-Allow-Credentials", "true");
+			// response.putHeader("P3P", "CP=CAO PSA OUR");
+			// response.putHeader("Content-Type",
+			// "application/x-www-form-urlencoded; charset=utf-8");
+			// if (request.getHeader("Access-Control-Request-Method") != null &&
+			// "OPTIONS".equals(request.method())) {
+			// response.putHeader("Access-Control-Allow-Methods",
+			// "POST,GET,TRACE,OPTIONS");
+			// response.putHeader("Access-Control-Allow-Headers",
+			// "Content-Type,Origin,Accept");
+			// response.putHeader("Access-Control-Max-Age", "120");
+			// }
 			response.end(result.getAttachment(Result.RESPONSE).toString());
 		});
+
 	}
 
 	private void get(Router router, String mapping) {
@@ -139,16 +160,21 @@ public class HttpService extends AbstractVerticle {
 			invocation.setAttachment(Invocation.REQUEST, param);
 			Result result = HandlerManager.handler(invocation);
 			HttpServerResponse response = context.response();
-			HttpServerRequest request = context.request();
-//			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-			response.putHeader("Access-Control-Allow-Credentials", "true");
-			response.putHeader("P3P", "CP=CAO PSA OUR");
-			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
-				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
-				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
-				response.putHeader("Access-Control-Max-Age", "120");
-			}
+			// HttpServerRequest request = context.request();
+			// response.putHeader("Access-Control-Allow-Origin",
+			// request.getHeader("Origin"));
+			// response.putHeader("Access-Control-Allow-Credentials", "true");
+			// response.putHeader("P3P", "CP=CAO PSA OUR");
+			// response.putHeader("Content-Type",
+			// "application/x-www-form-urlencoded; charset=utf-8");
+			// if (request.getHeader("Access-Control-Request-Method") != null &&
+			// "OPTIONS".equals(request.method())) {
+			// response.putHeader("Access-Control-Allow-Methods",
+			// "POST,GET,TRACE,OPTIONS");
+			// response.putHeader("Access-Control-Allow-Headers",
+			// "Content-Type,Origin,Accept");
+			// response.putHeader("Access-Control-Max-Age", "120");
+			// }
 			response.end(result.getAttachment(Result.RESPONSE).toString());
 		});
 	}
@@ -177,7 +203,7 @@ public class HttpService extends AbstractVerticle {
 
 			HttpServerResponse response = context.response();
 			HttpServerRequest request = context.request();
-//			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 			response.putHeader("Access-Control-Allow-Credentials", "true");
 			response.putHeader("P3P", "CP=CAO PSA OUR");
 			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");

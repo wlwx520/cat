@@ -44,6 +44,7 @@ public class ResultBuilder {
 
 		static {
 			error.put(0, "success");
+			error.put(0x10001, "json error");
 		}
 
 		public static String getErrorInfo(int code) {
