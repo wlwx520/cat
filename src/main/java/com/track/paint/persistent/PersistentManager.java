@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -703,12 +702,9 @@ public class PersistentManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends PersistentBean> List<T> query(T bean, String... conditions) {
-		List<String> conditionList;
-		if (conditions != null && conditions.length != 0) {
-			conditionList = Arrays.asList(conditions);
-		} else {
-			conditionList = new ArrayList<>();
+	public <T extends PersistentBean> List<T> query(T bean, List<String> conditions) {
+		if (conditions == null) {
+			conditions = new ArrayList<>();
 		}
 
 		List<T> result = new ArrayList<>();
@@ -721,7 +717,7 @@ public class PersistentManager {
 
 		sql.append("SELECT * FROM " + table + " WHERE 1 = 1");
 
-		if (conditionList.contains(PersistentBean.ID)) {
+		if (conditions.contains(PersistentBean.ID)) {
 			sql.append(" and " + PersistentBean.ID + " = " + bean.cat_static_table_primary_key);
 		}
 
@@ -734,11 +730,11 @@ public class PersistentManager {
 				SimpleRelation simpleRelation = field.getAnnotation(SimpleRelation.class);
 				try {
 					if (column != null) {
-						queryColumn(bean, conditionList, sql, field);
+						queryColumn(bean, conditions, sql, field);
 					} else if (autoincrement != null) {
-						queryKey(bean, conditionList, sql, field);
+						queryKey(bean, conditions, sql, field);
 					} else if (simpleRelation != null) {
-						querySimpleRelation(bean, conditionList, sql, field);
+						querySimpleRelation(bean, conditions, sql, field);
 					}
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					throw new SystemException(e);
@@ -971,7 +967,7 @@ public class PersistentManager {
 			for (String sp : split) {
 				PersistentBean newInstance = listSubClz.newInstance();
 				newInstance.cat_static_table_primary_key = Long.valueOf(sp);
-				List<PersistentBean> query = query(newInstance);
+				List<PersistentBean> query = query(newInstance, null);
 				assert (query != null);
 				listValue.addAll(query);
 			}
