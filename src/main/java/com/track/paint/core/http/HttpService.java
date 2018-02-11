@@ -77,6 +77,9 @@ public class HttpService extends AbstractVerticle {
 				if (asList.contains(HttpMethod.FILE)) {
 					file(router, mapping);
 				}
+				if (asList.contains(HttpMethod.DOWNLOAD)) {
+					downLoad(router, mapping);
+				}
 			}
 		});
 
