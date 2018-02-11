@@ -259,7 +259,14 @@ public class HttpService extends AbstractVerticle {
 			// response.putHeader("Access-Control-Max-Age", "120");
 			// }
 			if (result.getAttachment(Result.DOWNLOAD) != null) {
-				response.sendFile(result.getAttachment(Result.DOWNLOAD).toString());
+				try {
+					String name = new String(result.getAttachment(Result.DOWNLOAD_NAME).toString().getBytes("UTF-8"),
+							"ISO-8859-1");
+					response.putHeader("Content-Disposition", "form-data; name=file;filename=" + name + ".xlsx");
+					response.sendFile(result.getAttachment(Result.DOWNLOAD).toString());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			} else {
 				response.end("<p>无导出数据，请放回</p>");
 			}
