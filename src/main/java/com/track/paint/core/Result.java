@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 
 public class Result {
 	public static final String RESPONSE = "constants_response";
+	public static final String DOWNLOAD = "constants_download";
 	private Map<String, Object> attachments = new HashMap<String, Object>();
 
 	public Object getAttachment(String key) {

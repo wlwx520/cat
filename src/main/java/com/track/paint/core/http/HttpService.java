@@ -24,9 +24,9 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
@@ -202,17 +202,65 @@ public class HttpService extends AbstractVerticle {
 			Result result = HandlerManager.handler(invocation);
 
 			HttpServerResponse response = context.response();
-			HttpServerRequest request = context.request();
-			response.putHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
-			response.putHeader("Access-Control-Allow-Credentials", "true");
-			response.putHeader("P3P", "CP=CAO PSA OUR");
-			response.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
-			if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.method())) {
-				response.putHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
-				response.putHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
-				response.putHeader("Access-Control-Max-Age", "120");
-			}
+			// HttpServerRequest request = context.request();
+			// response.putHeader("Access-Control-Allow-Origin",
+			// request.getHeader("Origin"));
+			// response.putHeader("Access-Control-Allow-Credentials", "true");
+			// response.putHeader("P3P", "CP=CAO PSA OUR");
+			// response.putHeader("Content-Type",
+			// "application/x-www-form-urlencoded; charset=utf-8");
+			// if (request.getHeader("Access-Control-Request-Method") != null &&
+			// "OPTIONS".equals(request.method())) {
+			// response.putHeader("Access-Control-Allow-Methods",
+			// "POST,GET,TRACE,OPTIONS");
+			// response.putHeader("Access-Control-Allow-Headers",
+			// "Content-Type,Origin,Accept");
+			// response.putHeader("Access-Control-Max-Age", "120");
+			// }
 			response.end(result.getAttachment(Result.RESPONSE).toString());
+		});
+	}
+
+	private void downLoad(Router router, String mapping) {
+		router.post(mapping).handler(context -> {
+			Map<String, String> param = new HashMap<>();
+			MultiMap httpParam = context.request().params();
+			List<Map.Entry<String, String>> list = httpParam.entries();
+			for (Map.Entry<String, String> e : list) {
+				String key = e.getKey();
+				String value = e.getValue();
+				if (value == null || value.length() == 0) {
+					continue;
+				}
+				param.put(key, value);
+			}
+
+			Set<FileUpload> fileUploads = context.fileUploads();
+
+			Invocation invocation = new Invocation();
+			invocation.setAttachment(Invocation.MAPPING, mapping);
+			invocation.setAttachment(Invocation.REQUEST, param);
+			invocation.setAttachment(Invocation.UPLOAD_FILES, fileUploads);
+			Result result = HandlerManager.handler(invocation);
+
+			HttpServerResponse response = context.response();
+			// HttpServerRequest request = context.request();
+			// response.putHeader("Access-Control-Allow-Origin",
+			// request.getHeader("Origin"));
+			// response.putHeader("Access-Control-Allow-Credentials", "true");
+			// response.putHeader("P3P", "CP=CAO PSA OUR");
+			// response.putHeader("Content-Type",
+			// "application/x-www-form-urlencoded; charset=utf-8");
+			// if (request.getHeader("Access-Control-Request-Method") != null &&
+			// "OPTIONS".equals(request.method())) {
+			// response.putHeader("Access-Control-Allow-Methods",
+			// "POST,GET,TRACE,OPTIONS");
+			// response.putHeader("Access-Control-Allow-Headers",
+			// "Content-Type,Origin,Accept");
+			// response.putHeader("Access-Control-Max-Age", "120");
+			// }
+			byte[] attachment = (byte[]) result.getAttachment(Result.DOWNLOAD);
+			response.end(Buffer.buffer(attachment));
 		});
 	}
 

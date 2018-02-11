@@ -14,19 +14,6 @@ public class ResultBuilder {
 	private static final String STATUS = "status";
 	private static final String INFO = "info";
 
-	public static JSONObject build(int code) {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put(STATUS, code);
-		jsonObject.put(INFO, ErrorCode.getErrorInfo(code));
-		return jsonObject;
-	}
-
-	public static JSONObject build(int code, JSONObject jsonObject) {
-		jsonObject.put(STATUS, code);
-		jsonObject.put(INFO, ErrorCode.getErrorInfo(code));
-		return jsonObject;
-	}
-
 	public static Result buildResult(int code) {
 		Result result = new Result();
 		result.setAttachment(Result.RESPONSE, build(code));
@@ -37,6 +24,19 @@ public class ResultBuilder {
 		Result result = new Result();
 		result.setAttachment(Result.RESPONSE, build(code, jsonObject));
 		return result;
+	}
+
+	public static Result buildResult(int code, byte[] data) {
+		Result result = new Result();
+		result.setAttachment(Result.DOWNLOAD, data);
+		return result;
+	}
+
+	public static void addErrorCode(int code, String msg) throws ErrorCodeExcption {
+		if (ErrorCode.error.containsKey(code)) {
+			throw new ErrorCodeExcption("this code is exists , code = " + code);
+		}
+		ErrorCode.error.put(code, msg);
 	}
 
 	private static class ErrorCode {
@@ -54,11 +54,17 @@ public class ResultBuilder {
 
 	}
 
-	public static void addErrorCode(int code, String msg) throws ErrorCodeExcption {
-		if (ErrorCode.error.containsKey(code)) {
-			throw new ErrorCodeExcption("this code is exists , code = " + code);
-		}
-		ErrorCode.error.put(code, msg);
+	private static JSONObject build(int code) {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(STATUS, code);
+		jsonObject.put(INFO, ErrorCode.getErrorInfo(code));
+		return jsonObject;
+	}
+
+	private static JSONObject build(int code, JSONObject jsonObject) {
+		jsonObject.put(STATUS, code);
+		jsonObject.put(INFO, ErrorCode.getErrorInfo(code));
+		return jsonObject;
 	}
 
 }
