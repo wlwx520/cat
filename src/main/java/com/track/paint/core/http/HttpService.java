@@ -225,7 +225,7 @@ public class HttpService extends AbstractVerticle {
 	}
 
 	private void downLoad(Router router, String mapping) {
-		router.post(mapping).handler(context -> {
+		router.get(mapping).handler(context -> {
 			Map<String, String> param = new HashMap<>();
 			MultiMap httpParam = context.request().params();
 			List<Map.Entry<String, String>> list = httpParam.entries();
@@ -238,12 +238,9 @@ public class HttpService extends AbstractVerticle {
 				param.put(key, value);
 			}
 
-			Set<FileUpload> fileUploads = context.fileUploads();
-
 			Invocation invocation = new Invocation();
 			invocation.setAttachment(Invocation.MAPPING, mapping);
 			invocation.setAttachment(Invocation.REQUEST, param);
-			invocation.setAttachment(Invocation.UPLOAD_FILES, fileUploads);
 			Result result = HandlerManager.handler(invocation);
 
 			HttpServerResponse response = context.response();
