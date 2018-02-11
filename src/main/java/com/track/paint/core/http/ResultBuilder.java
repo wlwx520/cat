@@ -26,9 +26,10 @@ public class ResultBuilder {
 		return result;
 	}
 
-	public static Result buildResult(int code, byte[] data) {
+	public static Result buildResult(int code, String filePath) {
 		Result result = new Result();
-		result.setAttachment(Result.DOWNLOAD, data);
+		result.setAttachment(Result.DOWNLOAD, filePath);
+		result.setAttachment(Result.RESPONSE, build(code));
 		return result;
 	}
 

@@ -24,7 +24,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
@@ -259,8 +258,11 @@ public class HttpService extends AbstractVerticle {
 			// "Content-Type,Origin,Accept");
 			// response.putHeader("Access-Control-Max-Age", "120");
 			// }
-			byte[] attachment = (byte[]) result.getAttachment(Result.DOWNLOAD);
-			response.end(Buffer.buffer(attachment));
+			if (result.getAttachment(Result.DOWNLOAD) != null) {
+				response.sendFile(result.getAttachment(Result.DOWNLOAD).toString());
+			} else {
+				response.end("<p>无导出数据，请放回</p>");
+			}
 		});
 	}
 
