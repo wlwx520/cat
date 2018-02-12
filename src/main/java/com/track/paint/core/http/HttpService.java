@@ -268,7 +268,7 @@ public class HttpService extends AbstractVerticle {
 					e1.printStackTrace();
 				}
 			} else {
-				response.end("<p>无导出数据，请放回</p>");
+				response.end(result.getAttachment(Result.RESPONSE).toString());
 			}
 		});
 	}
