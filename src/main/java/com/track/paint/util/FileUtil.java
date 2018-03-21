@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.List;
 
 public class FileUtil {
+
 	public static String getAppRoot() {
 		return new File("").getAbsolutePath();
 	}
@@ -59,7 +60,7 @@ public class FileUtil {
 		}
 		return new ArrayList<>();
 	}
-	
+
 	public static String fileToBase64(File file) {
 		try (FileInputStream inputFile = new FileInputStream(file);) {
 			byte[] buffer = new byte[(int) file.length()];
