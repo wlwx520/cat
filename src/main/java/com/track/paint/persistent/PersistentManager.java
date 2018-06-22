@@ -113,7 +113,6 @@ public class PersistentManager {
             Connection connection = DBHelper.getConnection();
             PreparedStatement pst = connection.prepareStatement(sql.toString());
             pst.execute();
-            System.out.println("aaaaaaa");
 
             return true;
         } catch (SQLException e) {
